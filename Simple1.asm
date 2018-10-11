@@ -14,10 +14,30 @@ start	movlw	0x00
 	bra 	test
 loop	movff 	0x06, PORTC
 	incf 	0x06, W, ACCESS
+	call	delay
 test	movwf	0x06, ACCESS	    ; Test for end of loop cnodition
 	movlw	0xff
 	cpfsgt 	0x06, ACCESS
 	bra 	loop		    ; Not yet finished goto start of loop again
-	goto 	0x0		    ; Re-run program from start
+	goto 	0x0
 	
+delay   movlw   0xff
+	movwf   0x20, ACCESS
+	call delay_loop
+		
+	return 
+	
+delay_loop 
+	DECFSZ  0x20, F, ACCESS
+	movlw   .1
+	movwf   0x21, ACCESS
+	call delay_loop2
+	bra delay_loop
+	return
+	; Re-run program from start
+	
+delay_loop2
+	DECFSZ  0x21, F, ACCESS
+	bra delay_loop2
+	return
 	end
