@@ -45,6 +45,10 @@ delay_loop2
 	
 
 meme_setup
+	movlw 0x00
+	movwf 0x41, ACCESS	;high byte
+	movwf 0x42, ACCESS	;low byte
+	
 	movlw   0xff
 	movwf   0x40, ACCESS    ;counter setup
 	lfsr	FSR0, 0x050     ;start location address
@@ -56,22 +60,29 @@ mem_loop
 	bra	mem_loop
 	movlw   0xff
 	movwf   0x40, ACCESS
-	;bra mem_loop2
+	bra mem_loop2
 	
 mem_loop2
 	call	meme_run
 	DECFSZ  0x40, F, ACCESS  ;counter decrease
 	bra	mem_loop2
+	bra	terminate
 	
 	
 meme_run
 	movlw	0x1         ;put 1 in work reg
 	addwf	POSTINC0, w ;create number 1 above previous location, store in w reg
 	movwf	INDF0       ;POSTINC0 moves FSR to current address, store w reg value in current address
+	call	meme_counter
 	return
 	
 	
-
+meme_counter
+	movlw 0x1		;put 1 in work reg
+	addwf 0x42,f, ACCESS	;adds 1 to the lower byte of 16 bit number
+	movlw 0x00		;put 0 in work reg
+	addwfc 0x41, f,A	;if there is a carry add it to high byte
+	return
 	
-	
+terminate
 	end
