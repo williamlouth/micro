@@ -7,17 +7,19 @@ goto	start
 	org 0x100		    ; Main code starts here at address 0x100
 
 start	movlw	0x00
-	movwf	TRISC, ACCESS	; Port C all outputs
+	movwf	TRISD, ACCESS	;Port D all outputs
+	movwf   TRISE, ACCESS   ;Port E output
 	
 	
 	
-	bra 	test
-loop	movff 	0x06, PORTC
-	incf 	0x06, W, ACCESS
-test	movwf	0x06, ACCESS	    ; Test for end of loop cnodition
-	movlw	0xff
-	cpfsgt 	0x06, ACCESS
-	bra 	loop		    ; Not yet finished goto start of loop again
-	goto 	0x0		    ; Re-run program from start
+to_run  movlw  0x45
+	movwf  PORTE, ACCESS
+	movlw  0x1
+	movwf  PORTD, ACCESS
+	movlw  0x0
+	movwf  PORTD,ACCESS
+		   
+	bra    to_run
+	goto   0x0		    ; Re-run program from start
 	
 	end
