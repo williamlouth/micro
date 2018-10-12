@@ -9,7 +9,7 @@ goto	start
 start	movlw	0x00
 	movwf	TRISC, ACCESS	; Port C all outputs
 	
-	goto	meme_setup
+	bra	meme_setup
 	
 	bra 	test
 	
@@ -52,25 +52,26 @@ meme_setup
 	movwf	INDF0           ;begin at zero 
 mem_loop
 	call	meme_run
-	DECFSZ  0x40, F, ACCESS  ;location of counter
+	DECFSZ  0x40, F, ACCESS  ;counter decrease
 	bra	mem_loop
 	movlw   0xff
 	movwf   0x40, ACCESS
-	bra mem_loop2
+	;bra mem_loop2
 	
 mem_loop2
 	call	meme_run
-	DECFSZ  0x40, F, ACCESS  ;location of counter
+	DECFSZ  0x40, F, ACCESS  ;counter decrease
 	bra	mem_loop2
 	
 	
 meme_run
-	movlw	0x1
-	addwf	POSTINC0, w
-	movwf	INDF0
+	movlw	0x1         ;put 1 in work reg
+	addwf	POSTINC0, w ;create number 1 above previous location, store in w reg
+	movwf	INDF0       ;POSTINC0 moves FSR to current address, store w reg value in current address
 	return
 	
 	
+
 	
 	
 	end
