@@ -46,10 +46,10 @@ delay_loop2
 
 meme_setup
 	movlw   0xff
-	movwf   0x40, ACCESS
-	lfsr	FSR0, 0x050
+	movwf   0x40, ACCESS    ;counter setup
+	lfsr	FSR0, 0x050     ;start location address
 	movlw	0x0
-	movwf	INDF0
+	movwf	INDF0           ;begin at zero 
 mem_loop
 	call	meme_run
 	DECFSZ  0x40, F, ACCESS  ;location of counter
@@ -62,8 +62,6 @@ mem_loop2
 	call	meme_run
 	DECFSZ  0x40, F, ACCESS  ;location of counter
 	bra	mem_loop2
-	
-	
 	
 	
 meme_run
