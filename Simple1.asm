@@ -13,10 +13,10 @@ start
 	call port_e_pull_up
 	movlw	0x00
 	movwf	TRISD, ACCESS	;Port D all outputs
-	movwf   TRISE, ACCESS   ;Port E all outputs
+	;movwf   TRISE, ACCESS   ;Port E all outputs
 	call	write_setup
 	call	read_setup
-	
+	goto	terminate
 	;movlw   0x2
 	;movwf   PORTD, ACCESS
 	
@@ -63,7 +63,7 @@ read_setup	movlw	0x00
 	movwf  0x20
 	
 	movlw  0x1
-	movwf  0x21 , ACCESS
+	movwf  0x21 
 	
 	movlw  0x2
 	movwf  0x22 , ACCESS
@@ -84,15 +84,16 @@ check_2	cpfseq  0x21
 	 
 	
 	
-read_0	bcf     1,PORTD
-	movff   PORTE, 0x10
-	bsf     1,PORTD
+read_0	bcf     PORTD,  0x1
+
+	movff   PORTE,  0x10
+	bsf     PORTD,  0x1
 	return 
 	
 read_1
-	bcf     3,PORTD
+	bcf     PORTD , 0x3
 	movff   PORTE, 0x10
-	bsf     3,PORTD
+	bsf     PORTD,  0x3
 	return 
 	
 	;return fast
@@ -134,17 +135,20 @@ check_2_w
 write_0
 	movlw	0x45
 	movwf   PORTE, ACCESS
-	bcf	0,PORTD
-	bsf	0,PORTD
-	call	port_e_pull_up
+	bcf	PORTD, 0x0
+	bsf	PORTD, 0x0
+	setf	TRISE
 	return
 	
 write_1
 	movlw	0x69
 	movwf   PORTE, ACCESS
-	bcf	2,PORTD
-	bsf	2,PORTD
-	call	port_e_pull_up
+	bcf	PORTD, 0x2, ACCESS
+	bsf	PORTD, 0x2, ACCESS
+	setf	TRISE
 	return
+
+terminate
+	end
 	
 	end
