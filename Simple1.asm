@@ -4,12 +4,11 @@
 	
 	org 0x0	
 goto	start
-	;banksel PADCFG1 ; PADCFG1 is not in Access Bank!!
+	
 	
 	org 0x100		    ; Main code starts here at address 0x100
 
 start	
-	
 	call port_e_pull_up
 	movlw	0x00
 	movwf	TRISD, ACCESS	;Port D all outputs
@@ -45,6 +44,7 @@ to_run  movlw  0x45
 	
 
 port_e_pull_up
+	banksel PADCFG1 ; PADCFG1 is not in Access Bank!!
 	bsf PADCFG1, REPU, BANKED ; PortE pull-ups on
 	movlb 0x00 ; set BSR back to Bank 0
 	setf TRISE ; Tri-state PortE
