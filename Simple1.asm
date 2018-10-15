@@ -3,21 +3,57 @@
 	code
 	
 	org 0x0	
-goto	start
+	goto	start
+	
 	
 	
 	org 0x100		    ; Main code starts here at address 0x100
 
 start	
-	call port_e_pull_up
+	call	port_e_pull_up
 	movlw	0x00
 	movwf	TRISD, ACCESS	;Port D all outputs
+	movwf	TRISC, ACCESS	;Port D all outputs
+	movwf	TRISH, ACCESS	;Port D all outputs
+	movlw   0x0
+	movwf	PORTC
+	movwf	PORTH
+	
 	;movwf   TRISE, ACCESS   ;Port E all outputs
+	
+	movlw	0x45	    ;0x30 = whats being written
+	movwf	0x30
+	movlw	0x0	    ;0x31 = chip being written
+	movwf	0x31
+	
 	call	write_setup
+	
+	movlw	0x69
+	movwf	0x30
+	movlw	0x1
+	movwf	0x31
+	
+	call	write_setup
+	
+	
+	
+	
+	movlw	0x0
+	movwf	0x41	    ;chip being read from, writes to 0x40
 	call	read_setup
+	movff	0x40, PORTC
+	
+	movlw	0x1
+	movwf	0x41	    ;chip being read from, writes to 0x40
+	call	read_setup
+	movff	0x40, PORTH
+	
+	
+	
 	goto	terminate
 	;movlw   0x2
 	;movwf   PORTD, ACCESS
+	
 	
 	
 to_run  movlw  0x45
@@ -71,7 +107,7 @@ read_setup	movlw	0x00
 	movlw  0x3
 	movwf  0x23  , ACCESS
 	
-	movlw  0x1
+	movf  0x41,W
 	
 check_1	cpfseq  0x20
 	bra	check_2
@@ -85,15 +121,16 @@ check_2	cpfseq  0x21
 	
 	
 read_0	bcf     PORTD,  0x1
-
-	movff   PORTE,  0x10
+	movff   PORTE,  0x40
 	bsf     PORTD,  0x1
+	setf	TRISE
 	return 
 	
 read_1
 	bcf     PORTD , 0x3
-	movff   PORTE, 0x10
+	movff   PORTE, 0x40
 	bsf     PORTD,  0x3
+	setf	TRISE
 	return 
 	
 	;return fast
@@ -119,7 +156,7 @@ write_setup
 	movlw  0x3
 	movwf  0x23  , ACCESS
 	
-	movlw  0x1
+	movf  0x31, W
 	
 check_1_w	
 	cpfseq  0x20
@@ -133,7 +170,7 @@ check_2_w
 	
 	
 write_0
-	movlw	0x45
+	movf	0x30, W
 	movwf   PORTE, ACCESS
 	bcf	PORTD, 0x0
 	bsf	PORTD, 0x0
@@ -141,7 +178,7 @@ write_0
 	return
 	
 write_1
-	movlw	0x69
+	movf	0x30, W
 	movwf   PORTE, ACCESS
 	bcf	PORTD, 0x2, ACCESS
 	bsf	PORTD, 0x2, ACCESS
