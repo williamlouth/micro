@@ -14,7 +14,9 @@ start
 	movlw	0x00
 	movwf	TRISD, ACCESS	;Port D all outputs
 	movwf   TRISE, ACCESS   ;Port E all outputs
-	goto	read
+	call	write_setup
+	call	read_setup
+	
 	;movlw   0x2
 	;movwf   PORTD, ACCESS
 	
@@ -49,50 +51,100 @@ port_e_pull_up
 	return
 	
 	
-read	movlw	0x00
+read_setup	movlw	0x00
 	movwf	TRISD, ACCESS	;Port D all outputs
 	movlw   0xff
 	movwf	TRISE, ACCESS	;Port E all inputs
-	movlw   0x4
+	movlw   0xff
 	movwf   PORTD, ACCESS	;set both clocks and 0e's high, stable state
+	
 	
 	movlw  0x0
 	movwf  0x20
 	
 	movlw  0x1
-	movwf  0x21
+	movwf  0x21 , ACCESS
 	
 	movlw  0x2
-	movwf  0x22
+	movwf  0x22 , ACCESS
 	
 	movlw  0x3
-	movwf  0x23
+	movwf  0x23  , ACCESS
 	
 	movlw  0x1
 	
-	cpfseq  0x20
-	bra	0x1
+check_1	cpfseq  0x20
+	bra	check_2
 	bra	read_0
 	
-	cpfseq  0x21
-	bra	0x1
+check_2	cpfseq  0x21
+	return
 	bra	read_1
 	
-	return 
+	 
 	
 	
-read_0		
+read_0	bcf     1,PORTD
+	movff   PORTE, 0x10
+	bsf     1,PORTD
 	return 
 	
 read_1
+	bcf     3,PORTD
+	movff   PORTE, 0x10
+	bsf     3,PORTD
 	return 
 	
 	;return fast
 	
+write_setup
+	movlw	0x00
+	movwf	TRISD, ACCESS	;Port D all outputs
+	movlw   0x00
+	movwf	TRISE, ACCESS	;Port E all output
+	movlw   0xff
+	movwf   PORTD, ACCESS	;set both clocks and 0e's high, stable state
 	
 	
+	movlw  0x0
+	movwf  0x20
+	
+	movlw  0x1
+	movwf  0x21 , ACCESS
+	
+	movlw  0x2
+	movwf  0x22 , ACCESS
+	
+	movlw  0x3
+	movwf  0x23  , ACCESS
+	
+	movlw  0x1
+	
+check_1_w	
+	cpfseq  0x20
+	bra	check_2_w
+	bra	write_0
+	
+check_2_w	
+	cpfseq  0x21
+	return
+	bra	write_1
 	
 	
+write_0
+	movlw	0x45
+	movwf   PORTE, ACCESS
+	bcf	0,PORTD
+	bsf	0,PORTD
+	call	port_e_pull_up
+	return
 	
+write_1
+	movlw	0x69
+	movwf   PORTE, ACCESS
+	bcf	2,PORTD
+	bsf	2,PORTD
+	call	port_e_pull_up
+	return
 	
 	end
