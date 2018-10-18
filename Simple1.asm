@@ -87,10 +87,13 @@ port_e_pull_up
 	return
 	
 	
-read_setup	movlw	0x00
-	movwf	TRISD, ACCESS	;Port D all outputs
+read_setup	
+
 	movlw   0xff
 	movwf	TRISE, ACCESS	;Port E all inputs
+
+	movlw	0x00
+	movwf	TRISD, ACCESS	;Port D all outputs
 	movlw   0xff
 	movwf   PORTD, ACCESS	;set both clocks and 0e's high, stable state
 	
@@ -121,6 +124,7 @@ check_2	cpfseq  0x21
 	
 	
 read_0	bcf     PORTD,  0x1
+	nop			;need this delay to allow ff to output 
 	movff   PORTE,  0x40
 	bsf     PORTD,  0x1
 	setf	TRISE
@@ -128,6 +132,7 @@ read_0	bcf     PORTD,  0x1
 	
 read_1
 	bcf     PORTD , 0x3
+	nop			;need this delay to allow ff to output
 	movff   PORTE, 0x40
 	bsf     PORTD,  0x3
 	setf	TRISE
@@ -144,7 +149,7 @@ write_setup
 	movwf   PORTD, ACCESS	;set both clocks and 0e's high, stable state
 	
 	
-	movlw  0x0
+	movlw  0x0		;fills 0->3 in addresses 0x20->23
 	movwf  0x20
 	
 	movlw  0x1
@@ -158,10 +163,10 @@ write_setup
 	
 	movf  0x31, W
 	
-check_1_w	
+check_1_w			;checking if address = to 0,1,2,3
 	cpfseq  0x20
-	bra	check_2_w
-	bra	write_0
+	bra	check_2_w	;jumps to next check statement
+	bra	write_0		;jump to write for address 0
 	
 check_2_w	
 	cpfseq  0x21
@@ -186,6 +191,6 @@ write_1
 	return
 
 terminate
-	end
-	
+	goto $	    ;infinite loop
+
 	end
