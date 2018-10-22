@@ -35,7 +35,7 @@ start 	lfsr	FSR0, myArray	; Load FSR0 with address in RAM
 	movlw	low(myTable)	; address of data in PM
 	movwf	TBLPTRL		; load low byte to TBLPTRL
 	movlw	myTable_l	; bytes to read
-	movwf 	counter		; our counter register
+	movwf 	counter		; our counter registe\r
 	
 	decf	counter		;remove the carrige return
 loop 	
