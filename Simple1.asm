@@ -61,17 +61,17 @@ loop2 	tblrd*+			; one byte from PM to TABLAT, increment TBLPRT
 	
 	
 	
-	;call   LCD_2nd_line
+	call   LCD_2nd_line
 	movlw	myTable_l-1	; output message to LCD (leave out "\n")
 	lfsr	FSR2, myArray
 	call	LCD_Write_Message
 	;call	LCD_clear
 	;call   LCD_2nd_line
 	
-	call   LCD_2nd_line
-	movlw	myTable2_l-1	; output message to LCD (leave out "\n")
-	lfsr	FSR2, myArray2
-	call	LCD_Write_Message
+	;call   LCD_2nd_line
+	;movlw	myTable2_l-1	; output message to LCD (leave out "\n")
+	;lfsr	FSR2, myArray2
+	;call	LCD_Write_Message
 	
 
 	movlw	myTable_l	; output message to UART
