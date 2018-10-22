@@ -53,4 +53,8 @@ delay	decfsz	delay_count	; decrement until zero
 	bra delay
 	return
 
+button_set
+	movlw 0xff
+	movwf TRISD, ACCESS ;sets t
+
 	end
