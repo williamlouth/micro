@@ -20,7 +20,7 @@ LCD_Setup
 	movwf	TRISB
 	movlw   .40
 	call	LCD_delay_ms	; wait 40ms for LCD to start up properly
-	movlw	b'00000011'	; Function set 4-bit
+	movlw	b'00000010'	; Function set 4-bit
 	call	LCD_Send_Nib
 	movlw	.10		; wait 40us
 	call	LCD_delay_x4us
@@ -139,7 +139,7 @@ lcdlp1	decf 	LCD_cnt_l,F	; no carry when 0x00 -> 0xff
 LCD_2nd_line
 	movlw	b'11000000'
 	call	LCD_Send_Byte_I
-	movlw  .2
+	movlw   .2
 	call	LCD_delay_ms
 	return
 LCD_clear
