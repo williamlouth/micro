@@ -54,6 +54,7 @@ start2	call LCD_clear
 	movlw	myTable2_l	; bytes to read
 	movwf 	counter		; our counter registe\r
 	decf	counter		;remove the carrige return
+	call LCD_2nd_line
 	goto	loop
 loop 	
 	tblrd*+		    ; one byte from PM to TABLAT, increment TBLPRT
@@ -84,10 +85,13 @@ button_pending
 	BTFSC	PORTD, 0x2, A ;if button 3 pressed displays what is saved in table 2
 	goto start2
 	;BTFSC	PORTD, 0x3, A
-	
+	;call rifkat
 	;BTFSC	PORTD, 0x4, A
 	
 	bra button_pending
 	
-
+rifkat 
+	call LCD_2nd_line
+	call start
+	return
 	end
