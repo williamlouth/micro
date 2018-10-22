@@ -38,6 +38,8 @@ start	call LCD_clear
 	movwf	TBLPTRH		; load high byte to TBLPTRH
 	movlw	low(myTable)	; address of data in PM
 	movwf	TBLPTRL		; load low byte to TBLPTRL
+	TSTFSZ	0x20, A
+	call    LCD_2nd_line
 	movlw	myTable_l	; bytes to read
 	movwf 	counter		; our counter registe\r
 	decf	counter		;remove the carrige return
@@ -51,14 +53,19 @@ start2	call LCD_clear
 	movwf	TBLPTRH		; load high byte to TBLPTRH
 	movlw	low(myTable2)	; address of data in PM
 	movwf	TBLPTRL		; load low byte to TBLPTRL
+	TSTFSZ	0x20, A
+	call    LCD_2nd_line
 	movlw	myTable2_l	; bytes to read
-	movwf 	counter		; our counter registe\r
+	movwf 	counter		; our counter register
 	decf	counter		;remove the carrige return
-	call LCD_2nd_line
+	
 	goto	loop
 loop 	
+	;call    LCD_2nd_line
 	tblrd*+		    ; one byte from PM to TABLAT, increment TBLPRT
+	
 	movf	TABLAT, w   ; move data from TABLAT to working
+	
 	call	LCD_Send_Byte_D	;write data in working to LCD
 	
 	decfsz	counter		; count down to zero
@@ -82,16 +89,22 @@ button_pending
 	call LCD_clear
 	BTFSC	PORTD, 0x1, A ;if button 2 pressed displays what is saved in table 1
 	goto start
-	BTFSC	PORTD, 0x2, A ;if button 3 pressed displays what is saved in table 2
+	BTFSC	PORTD, 0x2, A ;if button 3 pressed displays what is saved in table 2	
 	goto start2
-	;BTFSC	PORTD, 0x3, A
-	;call rifkat
-	;BTFSC	PORTD, 0x4, A
-	
+	BTFSC	PORTD, 0x3, A
+	goto go_low
+	BTFSC	PORTD, 0x4, A
+	goto go_high
 	bra button_pending
 	
-rifkat 
-	call LCD_2nd_line
-	call start
-	return
+go_low
+	movlw 0x1
+	movwf 0x20, A
+	goto button_pending 
+	
+go_high
+	movlw 0x0
+	movwf 0x20, A
+	goto button_pending
+	
 	end
