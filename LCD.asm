@@ -1,6 +1,6 @@
 #include p18f87k22.inc
 
-    global  LCD_Setup, LCD_Write_Message
+    global  LCD_Setup, LCD_Write_Message,LCD_clear, LCD_2nd_line
 
 acs0    udata_acs   ; named variables in access ram
 LCD_cnt_l   res 1   ; reserve 1 byte for variable LCD_cnt_l
@@ -126,6 +126,19 @@ LCD_delay_x4us		    ; delay given in chunks of 4 microsecond in W
 	call	LCD_delay
 	return
 
+LCD_2nd_line
+	movlw	b'11000000'
+	call	LCD_Send_Byte_I
+	movlw  .2
+	call	LCD_delay_ms
+	return
+
+LCD_clear
+	movlw	b'00000001'
+	call	LCD_Send_Byte_I
+	movlw  .2
+	call	LCD_delay_ms
+	return
 LCD_delay			; delay routine	4 instruction loop == 250ns	    
 	movlw 	0x00		; W=0
 lcdlp1	decf 	LCD_cnt_l,F	; no carry when 0x00 -> 0xff
