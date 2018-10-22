@@ -17,6 +17,8 @@ pdata	code    ; a section of programme memory for storing data
 	; ******* myTable, data in programme memory, and its length *****
 myTable data	    "Hello World!\n"	; message, plus carriage return
 	constant    myTable_l=.13	; length of data
+myTable2 data	    "Send nudes\n"	; message, plus carriage return
+	constant    myTable2_l=.11	; length of data
 	
 main	code
 	; ******* Programme FLASH read Setup Code ***********************
@@ -24,10 +26,12 @@ setup	bcf	EECON1, CFGS	; point to Flash program memory
 	bsf	EECON1, EEPGD 	; access Flash program memory
 	call	UART_Setup	; setup UART
 	call	LCD_Setup	; setup LCD
+	call	button_set
 	goto	start
 	
 	; ******* Main programme ****************************************
-start 	lfsr	FSR0, myArray	; Load FSR0 with address in RAM	
+start	call LCD_clear
+	lfsr	FSR0, myArray	; Load FSR0 with address in RAM	
 	movlw	upper(myTable)	; address of data in PM
 	movwf	TBLPTRU		; load upper bits to TBLPTRU
 	movlw	high(myTable)	; address of data in PM
@@ -36,8 +40,21 @@ start 	lfsr	FSR0, myArray	; Load FSR0 with address in RAM
 	movwf	TBLPTRL		; load low byte to TBLPTRL
 	movlw	myTable_l	; bytes to read
 	movwf 	counter		; our counter registe\r
-	
 	decf	counter		;remove the carrige return
+	goto	loop
+	
+start2	call LCD_clear
+	lfsr	FSR0, myArray	; Load FSR0 with address in RAM	
+	movlw	upper(myTable2)	; address of data in PM
+	movwf	TBLPTRU		; load upper bits to TBLPTRU
+	movlw	high(myTable2)	; address of data in PM
+	movwf	TBLPTRH		; load high byte to TBLPTRH
+	movlw	low(myTable2)	; address of data in PM
+	movwf	TBLPTRL		; load low byte to TBLPTRL
+	movlw	myTable2_l	; bytes to read
+	movwf 	counter		; our counter registe\r
+	decf	counter		;remove the carrige return
+	goto	loop
 loop 	
 	tblrd*+		    ; one byte from PM to TABLAT, increment TBLPRT
 	movf	TABLAT, w   ; move data from TABLAT to working
@@ -45,7 +62,8 @@ loop
 	
 	decfsz	counter		; count down to zero
 	bra	loop		; keep going until finished table
-
+	
+	goto	button_pending
 	goto	$		; goto current line in code
 
 	; a delay subroutine if you need one, times around loop in delay_count
@@ -55,6 +73,21 @@ delay	decfsz	delay_count	; decrement until zero
 
 button_set
 	movlw 0xff
-	movwf TRISD, ACCESS ;sets t
+	movwf TRISD, ACCESS ;sets Port d to input
+	return
+	
+button_pending
+	BTFSC	PORTD, 0x0, A ;if button 1 pressed clears the LCD
+	call LCD_clear
+	BTFSC	PORTD, 0x1, A ;if button 2 pressed displays what is saved in table 1
+	goto start
+	BTFSC	PORTD, 0x2, A ;if button 3 pressed displays what is saved in table 2
+	goto start2
+	;BTFSC	PORTD, 0x3, A
+	
+	;BTFSC	PORTD, 0x4, A
+	
+	bra button_pending
+	
 
 	end
