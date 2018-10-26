@@ -1,6 +1,6 @@
 	#include p18f87k22.inc
 	global	start_keypad
-	extern delay, table_read_setup,table_u,table_h,table_l,table_address,table_counter
+	extern delay, table_read_setup,table_u,table_h,table_l,table_address,table_counter,LCD_Setup, LCD_Write_Message, LCD_clear, LCD_2nd_line,LCD_Send_Byte_D
     
 	
 key_pad_vars    udata_acs	    ; named variables in access ram
@@ -60,6 +60,7 @@ setup2	movlw b'11110000'    ;set high 4 to inputs, low 4 to outputs
 	addwf raw_numb_row,w
 	movwf PORTD,ACCESS
 	call delay
+	bra key_pad_decode
 	;goto setup1
 	
 key_pad_decode_setup
@@ -86,6 +87,7 @@ key_pad_decode_setup
 	movlw myTable_2
 	movwf table_counter
 	call table_read_setup
+	;call LCD_setup
 	return
 	
 	;movff raw_numb,decode_numb
@@ -104,11 +106,11 @@ key_pad_decode
 	movff PLUSW0,col_numb
 	
 	lfsr	FSR0, myArray1
-	movlw	 .4
+	movlw	.4
 	mulwf	row_numb
 	movff	PRODL,numb_final
-	movfw	col_numb
-	addwf	numb_final, f, a
+	movf	col_numb, w
+	addwf	numb_final, f
 	movff	PLUSW0, actual_input
 	;if either row or col has £ call invalid input
 	
