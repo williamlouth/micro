@@ -27,7 +27,7 @@ key_pad code
 table_keys db  "1","2","3","A","4","5","6","B","7","8","9","C","*","0","#","D"; message, plus carriage return
 	constant    myTable_l=.16	; length of data
 	
-table_power db  '£','0','1','£','2','£','£','£','3'  ;
+table_power db  '£',.0,.1,'£',.2,'£','£','£',.3  ;
 	constant    myTable_2 = .9
 	
 	
@@ -94,24 +94,36 @@ key_pad_decode_setup
 key_pad_decode
 	movff raw_numb_col, dec_numb_col
 	movff raw_numb_row, dec_numb_row
+	
+	movlw b'11110000'
+	addwf dec_numb_row
+	swapf dec_numb_col
+	movlw b'11110000'
+	addwf dec_numb_col
+	
 	comf dec_numb_row,f
 	comf dec_numb_col,f
+	
+	
 	
 	lfsr	FSR0, myArray2
 	;if inp > 8 call invalid input
 	movf dec_numb_row,w
 	movff PLUSW0,row_numb
 	
+	;lfsr	FSR0, myArray2
 	movf dec_numb_col,w
 	movff PLUSW0,col_numb
-	
+		
 	lfsr	FSR0, myArray1
 	movlw	.4
-	mulwf	row_numb
+	mulwf	col_numb
 	movff	PRODL,numb_final
-	movf	col_numb, w
+	movf	row_numb, w
 	addwf	numb_final, f
+	movf	numb_final,W
 	movff	PLUSW0, actual_input
+	movf	actual_input,w
 	;if either row or col has £ call invalid input
 	
 	
