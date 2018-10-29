@@ -19,6 +19,7 @@
       <itemPath>delay.asm</itemPath>
       <itemPath>key_pad.asm</itemPath>
       <itemPath>ADC.asm</itemPath>
+      <itemPath>maths.asm</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
