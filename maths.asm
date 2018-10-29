@@ -1,6 +1,11 @@
 #include p18f87k22.inc
 
-    global  eightby16, eight_in, sixteen_in_1,sixteen_in_2,twenty4_out_1,twenty4_out_2,twenty4_out_3
+    global  sixteenby16, sixteen_in_1,sixteen_in_2,sixteenB_in_1,sixteenB_in_2
+    global  eightby24,twenty4_in_1,twenty4_in_2,twenty4_in_3,eight_in
+    
+    global  thirty2_out_1,thirty2_out_2,thirty2_out_3,thirty2_out_4
+    
+    
     
 acs_ovr access_ovr
 eight_in res 1		    ;inputs
@@ -10,9 +15,17 @@ sixteen_in_2 res 1
 sixteenB_in_1 res 1
 sixteenB_in_2 res 1
  
+twenty4_in_1  res 1
+twenty4_in_2  res 1
+twenty4_in_3  res 1
+ 
 twenty4_out_1 res 1	    ;outputs  1 = lowest bit
 twenty4_out_2 res 1
 twenty4_out_3 res 1
+
+twenty4B_out_1 res 1	    ;outputs  1 = lowest bit
+twenty4B_out_2 res 1
+twenty4B_out_3 res 1
  
 thirty2_out_1 res 1
 thirty2_out_2 res 1
@@ -56,19 +69,68 @@ eightby16
     movwf   twenty4_out_2
     
     movff   L2_2,twenty4_out_3
+    
     movlw   0x00		
     addwfc  twenty4_out_3,f
+    return
     
-    BTFSC   STATUS, C		;check if carry
-    call    carried
+eightby24
     
+    movff   twenty4_in_1,sixteen_in_1
+    movff   twenty4_in_2,sixteen_in_2
+    call    eightby16
+    
+    bcf STATUS, C
+    
+    movf    twenty4_in_3,w
+    mulwf   eight_in
+    
+    movff   PRODL, sixteenB_in_1       ;use 24out save location but it actually
+    movff   PRODH, sixteenB_in_2	;a 16 bit number
+    
+    movff   twenty4_out_1,thirty2_out_1
+    movff   twenty4_out_2,thirty2_out_2
+    
+    movf    twenty4_out_3,w
+    addwf   sixteenB_in_1,w
+    movwf   thirty2_out_3
+    
+    movlw   0x0    
+    addwfc  sixteenB_in_2, w
+    movwf   thirty2_out_4
+    
+
+     
     return
     
 sixteenby16
     movff   sixteenB_in_1,eight_in
     call    eightby16
+    movff   twenty4_out_1, twenty4B_out_1
+    movff   twenty4_out_2, twenty4B_out_2
+    movff   twenty4_out_3, twenty4B_out_3
+    
+    movff   sixteenB_in_2,eight_in
+    call    eightby16
     
     
+    bcf STATUS, C
+    movff   twenty4B_out_1 , thirty2_out_1
+    
+    movf    twenty4B_out_2,w
+    addwf   twenty4_out_1, w
+    movwf   thirty2_out_2
+    
+    movf    twenty4B_out_3,w
+    addwfc  twenty4_out_2, w
+    movwf   thirty2_out_3
+    
+
+    movlw   0x0
+    addwfc  twenty4_out_3, w
+    movwf   thirty2_out_4
+    
+    return
     ;bcf STATUS, C	;clear the carry bit
    
     ;movf    sixteenB_in_1,w
@@ -106,11 +168,6 @@ carry_clear
     incf    L2_2
     bcf STATUS, C
     return
-    
-    
-carried
-    return
-    
     
 
 

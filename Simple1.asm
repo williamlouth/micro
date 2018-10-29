@@ -1,7 +1,11 @@
 	#include p18f87k22.inc
 	
 	
-	extern	start_keypad,eightby16,  eight_in, sixteen_in_1,sixteen_in_2,twenty4_out_1,twenty4_out_2,twenty4_out_3
+	;extern	sixteenby16, sixteen_in_1,sixteen_in_2,sixteenB_in_1,sixteenB_in_2,thirty2_out_1,thirty2_out_2,thirty2_out_3,thirty2_out_4,thirty2_out_5
+	
+	extern  sixteenby16, sixteen_in_1,sixteen_in_2,sixteenB_in_1,sixteenB_in_2
+	extern  eightby24,twenty4_in_1,twenty4_in_2,twenty4_in_3,eight_in
+	extern  thirty2_out_1,thirty2_out_2,thirty2_out_3,thirty2_out_4
 	
 	code
 	org 0x0	
@@ -10,20 +14,25 @@
 	org 0x100		    ; Main code starts here at address 0x100
 
 start
-	movlw  0x23
+	movlw  0x69
 	movwf  eight_in
 	
-	movlw  0x23
-	movwf  sixteen_in_1
+	movlw  0x42
+	movwf  twenty4_in_1
 	
-	movlw  0x23
-	movwf  sixteen_in_2
+	movlw  0x45
+	movwf  twenty4_in_2
 	
-	call eightby16
+	movlw  0x34
+	movwf  twenty4_in_3
 	
-	movf	twenty4_out_1,w
-	movf	twenty4_out_2,w
-	movf	twenty4_out_3,w
+	call eightby24
+	
+	movf	thirty2_out_1,w
+	movf	thirty2_out_2,w
+	movf	thirty2_out_3,w
+	movf	thirty2_out_4,w
+
 	
 	
 	goto start
