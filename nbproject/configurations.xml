@@ -21,7 +21,14 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
     <itemPath>README.md</itemPath>
+    <itemPath>LCD.asm</itemPath>
+    <itemPath>Table_read.asm</itemPath>
+    <itemPath>delay.asm</itemPath>
+    <itemPath>key_pad.asm</itemPath>
   </logicalFolder>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="default" type="2">
