@@ -10,6 +10,8 @@
 	extern  LCD_Setup, LCD_Write_Message, LCD_clear, LCD_2nd_line,LCD_Send_Byte_D,LCD_Write_Hex
 	extern delay
 	
+	extern DAC_setup,DAC_start
+	
 	
 acs1    udata_acs   
 k_high	res 1
@@ -23,11 +25,14 @@ final_4_high res 1
 	
 	code
 	org 0x0	
-	goto	start2
+	goto	start3
 	
 	org 0x100		    ; Main code starts here at address 0x100
 
 	
+start3
+	call DAC_setup
+	goto $
 start2 
 	call ADC_Setup
 	call LCD_Setup
