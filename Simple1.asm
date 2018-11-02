@@ -22,13 +22,52 @@ dec_out3 res 1
 dec_out4 res 1 
 final_4_low res 1
 final_4_high res 1
+ 
+new_counter res 1
+ 
+tables2 udata 
+myArray1 res 0xff
 	
 	code
 	org 0x0	
-	goto	start3
+	goto	start4
 	
 	org 0x100		    ; Main code starts here at address 0x100
 
+start4
+	movlw 0xff
+	movwf new_counter
+	call ADC_Setup
+	
+	movlw 0x0
+	movwf TRISD
+	movwf PORTD
+	
+	lfsr	FSR0, myArray1
+	
+	
+adc_loops
+	call ADC_Read
+	movff ADRESH,POSTINC0
+	
+	;movff ADRESL,POSTINC0
+	decfsz new_counter
+	bra adc_loops
+	
+	movlw 0x1
+	movwf new_counter
+	lfsr	FSR0, myArray1
+	
+dac_out
+	
+	movff	POSTINC0,PORTD
+	decfsz new_counter
+	bra dac_out
+	
+	movlw 0x1
+	movwf new_counter
+	lfsr	FSR0, myArray1
+	bra adc_loops
 	
 start3
 	call DAC_setup
